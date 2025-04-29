@@ -1,0 +1,86 @@
+<odoo>
+    <data>
+        <!-- Action for patients list -->
+        <record id="action_hms_patient_fix" model="ir.actions.act_window">
+            <field name="name">Fixed Patients</field>
+            <field name="res_model">hms.patient.fix</field>
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+        </record>
+
+        <!-- Menu item to access fixed patients -->
+        <menuitem id="menu_hms_fix" name="Hospital Management Fix" sequence="2"/>
+        <menuitem id="menu_hms_patient_fix" name="Fixed Patients" parent="menu_hms_fix" action="action_hms_patient_fix"/>
+
+        <!-- Base Patient Form View -->
+        <record id="view_hms_patient_fix_form" model="ir.ui.view">
+            <field name="name">hms.patient.fix.form</field>
+            <field name="model">hms.patient.fix</field>
+            <field name="arch" type="xml">
+                <form string="Fixed Patient">
+                    <sheet>
+                        <group>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="birth_date"/>
+                            <field name="age"/>
+                            <field name="show_history" invisible="1"/>
+                            <field name="history" invisible="not show_history"/>
+                            <field name="cr_ratio"/>
+                            <field name="blood_type"/>
+                            <field name="pcr"/>
+                            <field name="image"/>
+                            <field name="address"/>
+                            <field name="email"/>
+                        </group>
+
+                        <group>
+                            <field name="department_id" domain="[('is_opened', '=', True)]"/>
+                            <field name="doctor_ids" widget="many2many_tags" domain="[('department_id', '=', department_id)]"
+                                options="{'readonly': [('department_id', '=', False)]}"/>
+                        </group>
+
+                        <!-- Group for Patient Status -->
+                        <group string="Patient Status">
+                            <field name="state"/>
+                        </group>
+
+                        <group string="Log History">
+                            <field name="log_ids" widget="one2many_list">
+                                <tree editable="bottom">
+                                    <field name="created_by" readonly="1"/>
+                                    <field name="date" readonly="1"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- View for Manager: Ensure doctor_ids is visible -->
+        <record id="hms_patient_fix_form_view_manager" model="ir.ui.view">
+            <field name="name">hms.patient.fix.form.manager</field>
+            <field name="model">hms.patient.fix</field>
+            <field name="inherit_id" ref="view_hms_patient_fix_form"/>
+            <field name="arch" type="xml">
+                <field name="doctor_ids" position="attributes">
+                    <attribute name="invisible" groups="hms.group_hms_manager">0</attribute>
+                </field>
+            </field>
+        </record>
+
+        <!-- View for User: Hide doctor_ids -->
+        <record id="hms_patient_fix_form_view_user" model="ir.ui.view">
+            <field name="name">hms.patient.fix.form.user</field>
+            <field name="model">hms.patient.fix</field>
+            <field name="inherit_id" ref="view_hms_patient_fix_form"/>
+            <field name="arch" type="xml">
+                <field name="doctor_ids" position="attributes">
+                    <attribute name="invisible" groups="hms.group_hms_user">1</attribute>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>
